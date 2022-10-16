@@ -21,6 +21,25 @@ const getExcelData = async(req, res) => {
 
 };
 
+// get excel data
+const getExistingExcelData = async(req, res) => {
+    console.log("Getting existing excel data");
+    //console.log(req.query.username);
+    const username = req.query.username;
+    await UploadExcel.find({ username: username }).then((data) => {
+        if (data.length === 0)
+            console.log("No excel data found for this user");
+        else
+            console.log("Excel Data found for user");
+
+        res.send(data);
+    }).catch((err) => {
+        console.log("Error while getting Excel data");
+        res.send(err);
+    });
+
+};
+
 
 const uploadExcelData = async(req, res) => {
     console.log("Uploading Excel data");
@@ -47,4 +66,5 @@ const uploadExcelData = async(req, res) => {
 module.exports = {
     getExcelData,
     uploadExcelData,
+    getExistingExcelData
 }

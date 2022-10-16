@@ -5,15 +5,19 @@ const express = require('express');
 // Importing excel controller functions
 const {
     getExcelData,
-    uploadExcelData
+    uploadExcelData,
+    getExistingExcelData
 } = require('./../controllers/excelController');
 
 
 const router = express.Router();
 
 // Actual routes
-// Get all workouts
+// Get all excels
 router.get('/getExcel', getExcelData);
+
+// Get all existing excels
+router.get('/getExcels', getExistingExcelData);
 
 // Upload Excel data
 router.post('/uploadExcel', uploadExcelData);
