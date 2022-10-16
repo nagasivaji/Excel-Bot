@@ -1,9 +1,9 @@
 <template>
     <div class="inputExcelForm">
-        <input type="file" @input="onFormInput" id="excelInput">
+        <input type="file" id="excelInput">
         <br>
         <br>
-        <button @click="getExcelData">Click</button>
+        <button @click="postExcelData">Click</button>
         <br>
         <br>
         {{result}}
@@ -13,10 +13,12 @@
 <script>
 // imporing getExcelFunction logic from external js file
 import getExcel from './../apis/excel/getExcel';
+// Importing uploadExcel function logic from external js file
+import uploadExcel from './../apis/excel/uploadExcel';
+
 export default {
     data() {
         return {
-            fileInput: "null",
             result : "null",
         }
     },
@@ -25,8 +27,16 @@ export default {
             this.result = await getExcel();
         },
 
-        
+        updateResponse(response){
+            this.result = response;
+        },
 
+        postExcelData(){
+            var excelDom = document.getElementById("excelInput");
+            uploadExcel(excelDom, this.updateResponse);
+            excelDom.value = "";
+        },
+        
     },
 }
 </script>

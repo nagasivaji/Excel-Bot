@@ -7,11 +7,16 @@ const express = require('express');
 // Body Parser
 const bodyParser = require('body-parser');
 
+// Importing mongoose
+const mongoose = require('mongoose');
+
 // cors - for request accepting from browser 
 var cors = require('cors')
 
 // Importing excel routes from routes folder
 const excelRoutes = require('./routes/excelRoutes');
+
+
 
 
 // app
@@ -30,15 +35,19 @@ app.use(cors())
 
 
 // Routes
-app.get("/", (req,res) => {
+app.get("/", (req, res) => {
     res.send("Hello World!");
 });
+
+
+// Excel Routes
+// Importing Mongoose Models
+// const uploadExcel = require('./models/excel models/uploadExcelModel');
 
 // Diverting apis getting from browser to required routes file i.e 'routes/excelRoutes.js'
 app.use('/api/excel', excelRoutes);
 
 
-
 app.listen(process.env.PORT, () => {
-    console.log("Server listening on port"+ process.env.PORT + "!");
+    console.log("Server listening on port" + process.env.PORT + "!");
 });
