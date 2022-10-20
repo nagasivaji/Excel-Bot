@@ -9,7 +9,7 @@ async function getExistingExcelData() {
             //console.log(res.data.length);
             var temp = [];
             res.data.forEach((item) => {
-                console.log('item:', item);
+                ///////////////////////////console.log('item:', item);
                 temp.push(item.name);
             })
             result = temp;

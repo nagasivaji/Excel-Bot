@@ -1,38 +1,54 @@
 <template>
     <div class="inputExcelForm">
-        <input type="file" id="excelInput">
+        <input type="file" id="excelInput" @input="processInputExcelFile">
         <br>
         <br>
-        <button @click="postExcelData">Click</button>
+        <div id="sheetInputArea"></div>
         <br>
         <br>
-        {{result}}
+        
+        <div v-if="loading">
+            <a-spin  />
+        </div>
+        <div v-else>
+            <button @click="postExcelData">Click</button>
+            {{result}}
+        </div>
+
+
+
     </div>
 </template>
 
 <script>
-// imporing getExcelFunction logic from external js file
-import getExcel from './../apis/excel/getExcel';
 // Importing uploadExcel function logic from external js file
 import uploadExcel from './../apis/excel/uploadExcel';
+
+// Importing helper function 
+import processExcelFile from './../helpers/processInputExcelFile';
 
 export default {
     data() {
         return {
-            result : "null",
+            result : null,
+            loading : false,
         }
     },
     methods: {
-        async getExcelData(){
-            this.result = await getExcel();
+        // For processing Input file
+        processInputExcelFile(){
+            this.loading = true;
+            var excelDom = document.getElementById("excelInput");
+            processExcelFile(excelDom, this.updateResponse);
         },
-
+        // For updating result 
         updateResponse(response){
             this.result = response;
+            this.loading = false;
         },
 
+        // Posting Excel data
         postExcelData(){
-            var excelDom = document.getElementById("excelInput");
             uploadExcel(excelDom, this.updateResponse);
             excelDom.value = "";
         },
