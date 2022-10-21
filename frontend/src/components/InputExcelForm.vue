@@ -11,7 +11,7 @@
             <a-spin  />
         </div>
         <div v-else>
-            <button @click="postExcelData">Click</button>
+            <!-- <button @click="postExcelData">Click</button> -->
             {{result}}
         </div>
 

@@ -1,5 +1,5 @@
 // Importing Mongoose Models
-const UploadExcel = require('../models/excel models/uploadExcelModel');
+const Excel = require('../models/excel models/excelModel');
 
 
 // get excel data
@@ -7,7 +7,7 @@ const getExcelData = async(req, res) => {
     console.log("Getting excel data");
     //console.log(req.query.username);
     const username = req.query.username;
-    await UploadExcel.find({ username: username }).then((data) => {
+    await Excel.find({ username: username }).then((data) => {
         if (data.length === 0)
             console.log("No excel data found for this user");
         else
@@ -26,7 +26,7 @@ const getExistingExcelData = async(req, res) => {
     console.log("Getting existing excel data");
     //console.log(req.query.username);
     const username = req.query.username;
-    await UploadExcel.find({ username: username }).then((data) => {
+    await Excel.find({ username: username }).then((data) => {
         if (data.length === 0)
             console.log("No excel data found for this user");
         else
@@ -47,13 +47,13 @@ const uploadExcelData = async(req, res) => {
     //console.log(typeof(req.body.excelData));
     const { username, excelData } = req.body;
 
-    const uploadExcel = new UploadExcel({
+    const excel = new Excel({
         username: username,
         name: req.body.name,
         excelData: excelData,
     });
 
-    await uploadExcel.save().then((data) => {
+    await excel.save().then((data) => {
         console.log("ExcelData saved successfully");
         res.send("Uploaded Successfully");
     }).catch((err) => {

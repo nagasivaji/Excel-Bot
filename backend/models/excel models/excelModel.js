@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 mongoose.connect("mongodb://localhost:27017/ExcelBotDb", { useNewUrlParser: true });
 
 // Modeling ....
-const uploadExcelSchema = new mongoose.Schema({
+const excelSchema = new mongoose.Schema({
     username: {
         type: String,
         required: true
@@ -22,7 +22,7 @@ const uploadExcelSchema = new mongoose.Schema({
 
 
 // Creating Object for the model
-const UploadExcel = mongoose.model('UploadExcel', uploadExcelSchema);
+const Excel = mongoose.model('Excel', excelSchema);
 
 // Exporting this model
-module.exports = UploadExcel;
+module.exports = Excel;

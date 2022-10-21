@@ -7,7 +7,7 @@ function processExcelFile(excel, updateResponse) {
     if (response.status === true) {
         readExcelFile(excel, updateResponse);
     } else {
-        updateResponse(response.message);
+        updateResponse(response);
     }
 }
 
@@ -85,18 +85,18 @@ function showSheetsDropdown(excelSheets, ExcelBook, updateResponse) {
 
     //Sending data back to parent component
     //sendDataBack(0, ExcelBook, updateResponse);
-    getExcelData(0, excelSheets, ExcelBook);
+    getExcelData(0, excelSheets, ExcelBook, updateResponse);
 
     // Adding event Listener to select sheet dropdown
     selectSheet.addEventListener("change", () => {
         //Sending data back to parent component
         //sendDataBack(selectSheet.value, ExcelBook, updateResponse);
-        getExcelData(selectSheet.value, excelSheets, ExcelBook);
+        getExcelData(selectSheet.value, excelSheets, ExcelBook, updateResponse);
     });
 }
 
 //Get Excel Data
-function getExcelData(sheetNo, excelSheets, ExcelBook) {
+function getExcelData(sheetNo, excelSheets, ExcelBook, updateResponse) {
     // Based on sheet number reading the data present in sheet into json array format
     var sheetData = XLSX.utils.sheet_to_json(ExcelBook.Sheets[excelSheets[sheetNo]], { header: 1 });
     //console.log(sheetData);
@@ -144,16 +144,91 @@ function getExcelData(sheetNo, excelSheets, ExcelBook) {
             for (var k = 0; k < diff; k++) {
                 excelData[0][len1 + k] = excelData[0][len1 - 1 + k];
             }
-
         }
+
+        // Before returning finding heading rows
+        findHeadingsCount(sheetNo, excelSheets, excelData, updateResponse);
+
+    } else {
+        updateResponse({
+            status: false,
+            message: "NO-DATA",
+            excelData: excelData
+        });
+    }
+}
+
+// importing getColumns logic
+import getColumns from './../apis/properties/getColumns';
+
+// Finding no of heading rows in excel data
+async function findHeadingsCount(sheetNo, excelSheets, excelData, updateResponse) {
+
+    //console.log(typeof(excelData[1][0]));
+    if (typeof(excelData[0][0]) != 'string') {
+        updateResponse({
+            status: false,
+            message: "NO-HEADINGS",
+            excelData: excelData
+        });
+    } else {
+        var result = await getColumns();
+        //console.log(result);
+        var isColumnsThere = { status: false, heading: null };
+        result.forEach(cols => {
+            //console.log(cols.columnNames.toLowerCase(), " : ", excelData[0][0].toLowerCase());
+            var colName = excelData[0][0].toLowerCase();
+            if (cols.columnNames.toLowerCase() === colName) {
+                isColumnsThere = { status: true, heading: excelData[0][0] };
+            }
+        });
+
+        if (isColumnsThere.status) {
+            var headingsCount = -1;
+            for (var row = 0; row < excelData.length; row++) {
+                if (
+                    excelData[row][0] != isColumnsThere.heading &&
+                    typeof(excelData[row][0]) == 'number' &&
+                    excelData[row][0] === 1) {
+                    headingsCount = row;
+                    break;
+                }
+            }
+
+            if (headingsCount == -1) {
+                updateResponse({
+                    status: false,
+                    message: "ERROR-WITH-HEADING",
+                    excelData: excelData
+                });
+            } else {
+                sendDataBack(sheetNo, excelSheets, excelData, headingsCount, updateResponse);
+            }
+        } else {
+            updateResponse({
+                status: false,
+                message: "HEADING-NOT-FOUND",
+                excelData: excelData
+            });
+        }
+
     }
 
-    console.log(excelData);
+
+
 }
 
 
 
+
 // Sending Sheet number and sheet data...
-function sendDataBack(sheetNum, ExcelBook, updateResponse) {
-    updateResponse({ sheetNo: sheetNum, sheetData: ExcelBook })
+function sendDataBack(sheetNo, excelSheets, excelData, headingsCount, updateResponse) {
+    updateResponse({
+        status: true,
+        message: "EXCEL-DATA",
+        excelSheetNumber: sheetNo,
+        excelSheetNames: excelSheets,
+        excelSheetHeadingsCount: headingsCount,
+        excelData: excelData
+    });
 }

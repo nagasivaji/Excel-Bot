@@ -16,6 +16,10 @@ var cors = require('cors')
 // Importing excel routes from routes folder
 const excelRoutes = require('./routes/excelRoutes');
 
+// Importing properies routes from routes folder
+const propertiesRoutes = require('./routes/propertiesRoutes');
+
+
 
 
 
@@ -46,6 +50,8 @@ app.get("/", (req, res) => {
 
 // Diverting apis getting from browser to required routes file i.e 'routes/excelRoutes.js'
 app.use('/api/excel', excelRoutes);
+
+app.use('/api/properties', propertiesRoutes);
 
 
 app.listen(process.env.PORT, () => {
