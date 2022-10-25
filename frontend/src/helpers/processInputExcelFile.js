@@ -104,7 +104,7 @@ function showSheetsDropdown(excelSheets, ExcelBook, updateResponse) {
 }
 
 //Get Excel Data
-function getExcelData(sheetNo, excelSheets, ExcelBook, updateResponse) {
+async function getExcelData(sheetNo, excelSheets, ExcelBook, updateResponse) {
     // Based on sheet number reading the data present in sheet into json array format
     var sheetData = XLSX.utils.sheet_to_json(ExcelBook.Sheets[excelSheets[sheetNo]], { header: 1 });
     //console.log(sheetData);
@@ -114,49 +114,59 @@ function getExcelData(sheetNo, excelSheets, ExcelBook, updateResponse) {
 
     // If sheet has sufficient data
     if (sheetData.length > 0) {
-        // Rows loop
-        // Note: row zero contains headings and remaining rows containg data
-        for (var row = 0; row < sheetData.length; row++) {
-            // Columns loop
-            var temp_rowArray = [];
-            for (var cell = 0; cell < sheetData[row].length; cell++) {
-                // string data 
-                var value = sheetData[row][cell];
 
-                if (sheetData[row][cell] === undefined) {
-                    sheetData[row][cell] = sheetData[row][cell - 1];
-                    value = sheetData[row][cell];
+        // finding headings 
+        var headingsCount = await findHeadingsCount(sheetNo, excelSheets, sheetData, updateResponse);
+        //console.log(headingsCount);
+        if (headingsCount !== undefined) {
+            // Rows loop
+            // Note: row zero contains headings and remaining rows containg data
+            for (var row = 0; row < sheetData.length; row++) {
+                // Columns loop
+                var temp_rowArray = [];
 
+                for (var cell = 0; cell < sheetData[row].length; cell++) {
+                    // string data 
+                    var value = sheetData[row][cell];
+
+                    if (row < headingsCount) {
+                        if (sheetData[row][cell] === undefined) {
+                            sheetData[row][cell] = sheetData[row][cell - 1];
+                            value = sheetData[row][cell];
+
+                        }
+
+                        if (sheetData[row][cell] === undefined) {
+                            value = sheetData[row - 1][cell];
+                        }
+                    }
+
+                    // string celldata into temp array
+                    temp_rowArray.push(value);
                 }
 
-                if (sheetData[row][cell] === undefined) {
-                    value = sheetData[row - 1][cell];
-                }
+                // string array data into 2d array
+                excelData.push(temp_rowArray);
 
-                // string celldata into temp array
-                temp_rowArray.push(value);
+                //console.log(excelData);
             }
 
-            // string array data into 2d array
-            excelData.push(temp_rowArray);
+            // Before returning..... handling 1st row last column
+            const len1 = excelData[0].length;
+            const len2 = excelData[1].length;
+            //console.log(len1, len2);
+            if (len1 < len2) {
+                const diff = len2 - len1;
+                for (var k = 0; k < diff; k++) {
+                    excelData[0][len1 + k] = excelData[0][len1 - 1 + k];
+                }
+            }
 
             //console.log(excelData);
+
+            // Before returning... Updating The response
+            sendDataBack(sheetNo, excelSheets, excelData, headingsCount, updateResponse);
         }
-
-        // Before returning handling 1st row last column
-        const len1 = excelData[0].length;
-        const len2 = excelData[1].length;
-        //console.log(len1, len2);
-        if (len1 < len2) {
-            const diff = len2 - len1;
-            for (var k = 0; k < diff; k++) {
-                excelData[0][len1 + k] = excelData[0][len1 - 1 + k];
-            }
-        }
-
-        // Before returning finding heading rows
-        findHeadingsCount(sheetNo, excelSheets, excelData, updateResponse);
-
     } else {
         updateResponse({
             status: false,
@@ -213,7 +223,8 @@ async function findHeadingsCount(sheetNo, excelSheets, excelData, updateResponse
                     from: "newExcel"
                 });
             } else {
-                sendDataBack(sheetNo, excelSheets, excelData, headingsCount, updateResponse);
+                //sendDataBack(sheetNo, excelSheets, excelData, headingsCount, updateResponse);
+                return headingsCount;
             }
         } else {
             updateResponse({
@@ -226,7 +237,7 @@ async function findHeadingsCount(sheetNo, excelSheets, excelData, updateResponse
 
     }
 
-
+    return undefined;
 
 }
 
