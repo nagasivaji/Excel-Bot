@@ -26,9 +26,17 @@ function checkExcelOrNot(excel) {
         if (!['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'].includes(excel.files[0].type)) {
 
             excel.value = '';
-            return { status: false, message: "Only .xlsx or .xls file format are allowed" };
+            return {
+                status: false,
+                message: "Only .xlsx or .xls file format are allowed",
+                from: "newExcel"
+            };
         }
-        return { status: true, message: "Input file is in correct format" };
+        return {
+            status: true,
+            message: "Input file is in correct format",
+            from: "newExcel"
+        };
     } catch (e) {
         //console.log("Error: "+e);
         return { status: false, message: "No file choosen" };
@@ -153,7 +161,8 @@ function getExcelData(sheetNo, excelSheets, ExcelBook, updateResponse) {
         updateResponse({
             status: false,
             message: "NO-DATA",
-            excelData: excelData
+            excelData: excelData,
+            from: "newExcel"
         });
     }
 }
@@ -169,7 +178,8 @@ async function findHeadingsCount(sheetNo, excelSheets, excelData, updateResponse
         updateResponse({
             status: false,
             message: "NO-HEADINGS",
-            excelData: excelData
+            excelData: excelData,
+            from: "newExcel"
         });
     } else {
         var result = await getColumns();
@@ -199,7 +209,8 @@ async function findHeadingsCount(sheetNo, excelSheets, excelData, updateResponse
                 updateResponse({
                     status: false,
                     message: "ERROR-WITH-HEADING",
-                    excelData: excelData
+                    excelData: excelData,
+                    from: "newExcel"
                 });
             } else {
                 sendDataBack(sheetNo, excelSheets, excelData, headingsCount, updateResponse);
@@ -208,7 +219,8 @@ async function findHeadingsCount(sheetNo, excelSheets, excelData, updateResponse
             updateResponse({
                 status: false,
                 message: "HEADING-NOT-FOUND",
-                excelData: excelData
+                excelData: excelData,
+                from: "newExcel"
             });
         }
 
@@ -229,6 +241,7 @@ function sendDataBack(sheetNo, excelSheets, excelData, headingsCount, updateResp
         excelSheetNumber: sheetNo,
         excelSheetNames: excelSheets,
         excelSheetHeadingsCount: headingsCount,
-        excelData: excelData
+        excelData: excelData,
+        from: "newExcel"
     });
 }

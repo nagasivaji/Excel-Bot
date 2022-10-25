@@ -6,31 +6,20 @@
         <div id="sheetInputArea"></div>
         <br>
         <br>
-        
-        <div v-if="loading">
-            <a-spin  />
-        </div>
-        <div v-else>
-            <!-- <button @click="postExcelData">Click</button> -->
-            {{result}}
-        </div>
-
-
-
     </div>
 </template>
 
 <script>
 // Importing uploadExcel function logic from external js file
-import uploadExcel from './../apis/excel/uploadExcel';
+import uploadExcel from '../../apis/excel/uploadExcel';
 
 // Importing helper function 
-import processExcelFile from './../helpers/processInputExcelFile';
+import processExcelFile from '../../helpers/processInputExcelFile';
 
 export default {
+    props: ['updateResponseText'],
     data() {
         return {
-            result : null,
             loading : false,
         }
     },
@@ -43,8 +32,7 @@ export default {
         },
         // For updating result 
         updateResponse(response){
-            this.result = response;
-            this.loading = false;
+            this.updateResponseText(response);
         },
 
         // Posting Excel data
@@ -54,6 +42,9 @@ export default {
         },
         
     },
+    // created() {
+    //     this.updatedResponseText("Abcd");
+    // },
 }
 </script>
 

@@ -4,9 +4,9 @@
         <button @click="showUploadExcel" >Upload New Excel</button> | 
         <button @click="showExistingExcel" >Work With Existing Excel</button>
         <br> <br>
-        <UploadNewExcel v-show="uploadExcel" />
-        <GoWithExistingExcels v-show="existingExcel" />
-        <!-- <InputExcelForm />  -->
+        <UploadNewExcel v-if="uploadExcel" :updateResponseText="updateResponseText"/>
+        <GoWithExistingExcels v-if="existingExcel" :updateResponseText="updateResponseText"/>
+        <ResponseText :responseText="responseText" />
     </div>
 </template>
 
@@ -15,14 +15,16 @@
 // Importing components 
 import UploadNewExcel from './../components/excel/UploadNewExcel.vue';
 import GoWithExistingExcels from './../components/excel/GoWithExistingExcels.vue';
+import ResponseText from './../components/ResponseText.vue';
 
 export default {
     name: 'Home',
-    components : {UploadNewExcel, GoWithExistingExcels},
+    components : {UploadNewExcel, GoWithExistingExcels, ResponseText},
     data() {
         return {
             uploadExcel: true,
             existingExcel: false,
+            responseText: null,
         }
     },
     methods: {
@@ -33,7 +35,10 @@ export default {
         showExistingExcel(){
             this.uploadExcel = false;
             this.existingExcel = true;
-        }
+        }, 
+        updateResponseText(response) {
+            this.responseText = response;
+        },
     },
 }
 </script>
