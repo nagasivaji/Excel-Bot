@@ -10,9 +10,6 @@
 </template>
 
 <script>
-// Importing uploadExcel function logic from external js file
-import uploadExcel from '../../apis/excel/uploadExcel';
-
 // Importing helper function 
 import processExcelFile from '../../helpers/processInputExcelFile';
 
@@ -34,13 +31,6 @@ export default {
         updateResponse(response){
             this.updateResponseText(response);
         },
-
-        // Posting Excel data
-        postExcelData(){
-            uploadExcel(excelDom, this.updateResponse);
-            excelDom.value = "";
-        },
-        
     },
     // created() {
     //     this.updatedResponseText("Abcd");

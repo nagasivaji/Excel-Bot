@@ -12,6 +12,8 @@
             v-show="responseText && responseText.status"
         >Preview Excel File</button>
         <PreviewExcelFile v-if="previewExcel" :tableContent="responseText" :showPreviewExcel="showPreviewExcel" />
+
+        <button @click="postExcelData">Post Excel</button>
     </div>
 </template>
 
@@ -22,6 +24,9 @@ import UploadNewExcel from './../components/excel/UploadNewExcel.vue';
 import GoWithExistingExcels from './../components/excel/GoWithExistingExcels.vue';
 import ResponseText from './../components/ResponseText.vue';
 import PreviewExcelFile from './../components/tables/PreviewExcelFile.vue';
+
+// Importing uploadExcel function logic from external js file
+import uploadExcel from './../apis/excel/uploadExcel.js';
 
 export default {
     name: 'Home',
@@ -48,6 +53,10 @@ export default {
         },
         showPreviewExcel(){
             this.previewExcel = !this.previewExcel;
+        },
+        // Posting Excel data
+        postExcelData(){
+            uploadExcel(this.responseText.excelData, this.updateResponseText);
         },
     },
 }
